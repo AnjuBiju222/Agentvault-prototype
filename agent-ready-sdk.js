@@ -13,7 +13,7 @@
  * can read every line (trust), but the value lives server-side (moat).
  */
 
-function agentReady({ apiKey, verifierUrl = 'http://localhost:4000' }) {
+function agentReady({ apiKey, verifierUrl = 'http://127.0.0.1:4000' }) {
   if (!apiKey) throw new Error('agent-ready: apiKey is required');
 
   return async function verifyAgentMiddleware(req, res, next) {
@@ -58,7 +58,7 @@ function agentReady({ apiKey, verifierUrl = 'http://localhost:4000' }) {
 }
 
 /** Capture: report a completed purchase so it counts against the mandate. */
-agentReady.commit = function ({ apiKey, verifierUrl = 'http://localhost:4000' }) {
+agentReady.commit = function ({ apiKey, verifierUrl = 'http://127.0.0.1:4000' }) {
   // `ref` is the intent id: the identity of the PURCHASE. Passing it makes
   // this call safe to retry -- the verifier counts the first one and
   // recognises the rest as the same capture. Without it, a retry after a
@@ -79,7 +79,7 @@ agentReady.commit = function ({ apiKey, verifierUrl = 'http://localhost:4000' })
 };
 
 /** Release a hold when the purchase fails after authorization. */
-agentReady.release = function ({ apiKey, verifierUrl = 'http://localhost:4000' }) {
+agentReady.release = function ({ apiKey, verifierUrl = 'http://127.0.0.1:4000' }) {
   return async function releaseHold(holdId) {
     if (!holdId) return;
     try {

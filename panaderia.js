@@ -41,4 +41,4 @@ app.post('/checkout', verify, async (req, res) => {
   res.json({ ok: true, sold: product.name, to: req.agent });
 });
 
-app.listen(3001, () => console.log('PANADERÍA (second merchant, same SDK) on http://localhost:3001\n'));
+app.listen(3001, "127.0.0.1", () => console.log('PANADERÍA (second merchant, same SDK) on http://127.0.0.1:3001\n'));

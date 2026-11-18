@@ -6,3 +6,8 @@ agent-key.json
 *.log
 
 .data/
+
+.github-auth/
+.hosted-data/
+.env
+.env.*

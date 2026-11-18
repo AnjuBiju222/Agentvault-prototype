@@ -1,4 +1,4 @@
-﻿const { spawn } = require("node:child_process");
+const { spawn } = require("node:child_process");
 const path = require("node:path");
 const children = [];
 let stopping = false;
@@ -36,6 +36,8 @@ function stop(code = 0) {
 async function main() {
   for (const [file, port, route] of services) {
     if (await healthy(port, route)) {
+      if (process.env.AGENTVAULT_HOSTED === "1")
+        throw Error(`Port ${port} is already occupied. Hosted startup requires its own services.`);
       console.log(`Using running ${file} on :${port}`);
       continue;
     }

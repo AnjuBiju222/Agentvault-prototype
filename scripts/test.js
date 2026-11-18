@@ -1,6 +1,6 @@
 const { spawnSync } = require("node:child_process");
 for (const args of [
-  ["--test", "tests/shopping-planner.test.js", "tests/shopping-routes.test.js"],
+  ["--test", "tests/shopping-planner.test.js", "tests/shopping-routes.test.js", "tests/hosted-access.test.js"],
   ["scripts/smoke-test.js"],
   ["scripts/shopping-test.js"],
   ["scripts/ui-test.js"],

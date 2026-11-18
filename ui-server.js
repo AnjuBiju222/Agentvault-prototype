@@ -6,27 +6,29 @@ const Database = require("better-sqlite3");
 const { signRequest } = require("./httpsig");
 const { buildPayment } = require("./x402");
 const { installShoppingRoutes } = require("./shopping-routes");
+const { dataPath } = require("./storage");
+const { hostedAccess } = require("./hosted-access");
 
 const SERVICES = [
   {
     id: "verifier",
     name: "Identity & budgets",
     port: 4000,
-    url: "http://localhost:4000",
+    url: "http://127.0.0.1:4000",
     health: "/billing",
   },
   {
     id: "facilitator",
     name: "Payment settlement",
     port: 4001,
-    url: "http://localhost:4001",
+    url: "http://127.0.0.1:4001",
     health: "/balances",
   },
   {
     id: "tools",
     name: "Ferretería Online",
     port: 3000,
-    url: "http://localhost:3000",
+    url: "http://127.0.0.1:3000",
     health: "/catalog",
     category: "Tools",
     payTo: "ferreteria-online",
@@ -36,7 +38,7 @@ const SERVICES = [
     id: "bakery",
     name: "Panadería La Espiga",
     port: 3001,
-    url: "http://localhost:3001",
+    url: "http://127.0.0.1:3001",
     health: "/catalog",
     category: "Bakery",
     payment: false,
@@ -94,7 +96,12 @@ const publicOrder = (row) => ({
   payment: Boolean(row.payment),
 });
 
-function createApp({ dataDirectory = path.join(__dirname, ".data") } = {}) {
+function createApp({
+  dataDirectory = dataPath(".data"),
+  publicOrigin = process.env.PUBLIC_ORIGIN || process.env.RENDER_EXTERNAL_URL,
+  username = process.env.DEMO_USER || "agentvault",
+  password = process.env.DEMO_PASSWORD,
+} = {}) {
   fs.mkdirSync(dataDirectory, { recursive: true });
   const db = new Database(path.join(dataDirectory, "dashboard.db"));
   db.pragma("journal_mode = WAL");
@@ -120,8 +127,9 @@ function createApp({ dataDirectory = path.join(__dirname, ".data") } = {}) {
   ).run();
   const app = express();
   app.disable("x-powered-by");
+  const hosted = hostedAccess(app, { publicOrigin, username, password });
   app.use((req, res, next) => {
-    if (!["localhost", "127.0.0.1", "[::1]"].includes(req.hostname))
+    if (!hosted && !["localhost", "127.0.0.1", "[::1]"].includes(req.hostname))
       return res
         .status(403)
         .json({ error: "This demo is available on localhost." });
@@ -135,7 +143,7 @@ function createApp({ dataDirectory = path.join(__dirname, ".data") } = {}) {
     if (req.method !== "GET" && req.method !== "HEAD") {
       const origin = req.get("Origin");
       if (
-        (origin && origin !== `${req.protocol}://${req.get("Host")}`) ||
+        (origin && origin !== (hosted?.origin || `${req.protocol}://${req.get("Host")}`)) ||
         req.get("X-Requested-With") !== "AgentStack"
       ) {
         return res
@@ -180,6 +188,7 @@ function createApp({ dataDirectory = path.join(__dirname, ".data") } = {}) {
     }
     res.cookie("agent_stack_session", token, {
       httpOnly: true,
+      secure: Boolean(hosted?.secure),
       sameSite: "strict",
       maxAge: 30 * 86400000,
       path: "/",
@@ -600,8 +609,8 @@ function createApp({ dataDirectory = path.join(__dirname, ".data") } = {}) {
 
 if (require.main === module) {
   const port = Number(process.env.UI_PORT || 8080);
-  createApp().listen(port, "127.0.0.1", () =>
-    console.log(`AgentVault dashboard: http://localhost:${port}`),
+  createApp().listen(port, process.env.AGENTVAULT_HOSTED === "1" ? "0.0.0.0" : "127.0.0.1", () =>
+    console.log(`AgentVault dashboard: http://127.0.0.1:${port}`),
   );
 }
 module.exports = { createApp };

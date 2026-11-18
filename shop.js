@@ -14,13 +14,13 @@ const Database = require('better-sqlite3');
 const agentReady = require('./agent-ready-sdk');
 const { paymentRequired } = require('./x402');                       // (1)
 
-const FACILITATOR = 'http://localhost:4001';
+const FACILITATOR = 'http://127.0.0.1:4001';
 
 // The shop's own books: what did we actually deliver, and for which tx?
 // Without this, a crash between "money settled" and "goods served"
 // leaves money the shop can't account for. Memory isn't enough — a crash
 // wipes it, which is precisely the case we're defending against.
-const books = new Database('shop.db');
+const books = new Database(require('./storage').dataPath('shop.db'));
 books.pragma('journal_mode = WAL');
 books.exec(`CREATE TABLE IF NOT EXISTS fulfilled (
   tx_id TEXT PRIMARY KEY, sku TEXT NOT NULL, agent_id TEXT NOT NULL, created_at INTEGER NOT NULL
@@ -182,4 +182,4 @@ if (process.env.ALLOW_DEV_RESET === '1') {
   });
 }
 
-app.listen(3000, () => console.log('FERRETERÍA (a merchant using the SDK) on http://localhost:3000\n'));
+app.listen(3000, "127.0.0.1", () => console.log('FERRETERÍA (a merchant using the SDK) on http://127.0.0.1:3000\n'));

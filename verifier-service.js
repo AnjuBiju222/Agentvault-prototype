@@ -19,7 +19,7 @@ const crypto = require('crypto');
 const Database = require('better-sqlite3');
 const { verifyRequest, parseSignatureInput } = require('./httpsig');
 
-const db = new Database('verifier.db');
+const db = new Database(require('./storage').dataPath('verifier.db'));
 db.pragma('journal_mode = WAL');
 db.exec(`
   CREATE TABLE IF NOT EXISTS agents (
@@ -302,7 +302,7 @@ app.get('/billing', (_req, res) => {
  * the only record there is. Cross-rail agents are exactly where a
  * merchant-side coordinator stops being able to see everything.
  */
-const FACILITATOR = process.env.FACILITATOR_URL || 'http://localhost:4001';
+const FACILITATOR = process.env.FACILITATOR_URL || 'http://127.0.0.1:4001';
 
 async function reconcileAgent(agentId) {
   const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
@@ -387,4 +387,4 @@ if (process.env.ALLOW_DEV_RESET === '1') {
   console.log('⚠  ALLOW_DEV_RESET=1 — POST /dev/reset will wipe the ledger. Never set this in production.');
 }
 
-app.listen(4000, () => console.log('VERIFIER SERVICE (the product) on http://localhost:4000\n'));
+app.listen(4000, "127.0.0.1", () => console.log('VERIFIER SERVICE (the product) on http://127.0.0.1:4000\n'));

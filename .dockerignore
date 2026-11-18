@@ -1,0 +1,12 @@
+.git
+.github-auth
+node_modules
+.data
+.hosted-data
+.env
+.env.*
+agent-key.json
+*.db
+*.db-*
+*.log
+x402-real

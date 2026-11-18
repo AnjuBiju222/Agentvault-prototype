@@ -1,3 +1,4 @@
+const fetch = require("./test-fetch");
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const base = process.env.TEST_URL || "http://localhost:8080";

@@ -14,7 +14,7 @@ const express = require('express');
 const crypto = require('crypto');
 const Database = require('better-sqlite3');
 
-const db = new Database('facilitator.db');
+const db = new Database(require('./storage').dataPath('facilitator.db'));
 db.pragma('journal_mode = WAL');
 db.exec(`
   CREATE TABLE IF NOT EXISTS accounts (
@@ -210,4 +210,4 @@ if (process.env.ALLOW_DEV_RESET === '1') {
   });
 }
 
-app.listen(4001, () => console.log('FACILITATOR (settlement layer) on http://localhost:4001\n'));
+app.listen(4001, "127.0.0.1", () => console.log('FACILITATOR (settlement layer) on http://127.0.0.1:4001\n'));

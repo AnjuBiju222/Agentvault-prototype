@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: agentvault-demo
+    runtime: node
+    region: frankfurt
+    plan: 0.5c-512mb
+    buildCommand: npm ci --omit=dev
+    startCommand: npm run start:hosted
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.0
+      - key: AGENTVAULT_DATA_DIR
+        value: /var/data/agentvault
+      - key: DEMO_USER
+        value: agentvault
+      - key: DEMO_PASSWORD
+        generateValue: true
+    disk:
+      name: agentvault-data
+      mountPath: /var/data
+      sizeGB: 1
