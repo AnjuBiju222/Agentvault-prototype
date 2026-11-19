@@ -1,0 +1,10 @@
+﻿[
+ {"id":"01","start":0,"duration":6,"title":"Who controls an agent with a wallet?","text":"Your next shopper could be an agent. Who decides what it can spend?"},
+ {"id":"02","start":6,"duration":9,"title":"A purchase needs more than a payment.","text":"Across different shops, an agent needs a verified identity, shared spending limits, and a payment record you can actually check."},
+ {"id":"03","start":15,"duration":5,"title":"AgentVault","text":"Meet AgentVault. For payment agents."},
+ {"id":"04","start":20,"duration":8,"title":"Tell your agent what you need.","text":"Just ask: buy two pairs of gloves and a box of screws, under fifty euros."},
+ {"id":"05","start":28,"duration":8,"title":"Review first. Approve the purchase.","text":"Review the matched products, adjust quantities, and approve the total. Planning alone never makes a purchase."},
+ {"id":"06","start":36,"duration":10,"title":"Verified before checkout.","text":"At checkout, the agent signs each request. Its identity and spending limits are verified before the tool shop settles payment."},
+ {"id":"07","start":46,"duration":8,"title":"Know what happened to every payment.","text":"Follow every receipt and balance. Duplicate approvals don't repeat purchases. Over-budget requests are blocked."},
+ {"id":"08","start":54,"duration":6,"title":"Let agents shop. Keep control of spending.","text":"The agent handles the shopping. You keep control of the spending. AgentVault."}
+]

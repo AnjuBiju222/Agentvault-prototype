@@ -250,6 +250,20 @@ app.post('/commit', (req, res) => {
 });
 
 /** The money view: what would we invoice each merchant? */
+// Read-only budget view for the dashboard. Never returns the agent's public key.
+app.get('/agents/:agentId/summary', (req, res) => {
+  if (!db.prepare('SELECT 1 FROM merchants WHERE api_key = ?').get(req.header('X-Api-Key') ?? '')) {
+    return res.status(401).json({ error: 'Invalid merchant API key.' });
+  }
+  const agent = db.prepare('SELECT * FROM agents WHERE agent_id = ?').get(req.params.agentId);
+  if (!agent) return res.status(404).json({ error: 'Agent not found.' });
+  const start = new Date(); start.setHours(0, 0, 0, 0);
+  const spentCents = db.prepare('SELECT COALESCE(SUM(amount_cents), 0) total FROM spends WHERE agent_id = ? AND created_at >= ?').get(agent.agent_id, start.getTime()).total;
+  const heldCents = db.prepare('SELECT COALESCE(SUM(amount_cents), 0) total FROM holds WHERE agent_id = ? AND expires_at >= ?').get(agent.agent_id, Date.now()).total;
+  res.json({ maxPerTxCents: agent.max_per_tx_cents, maxPerDayCents: agent.max_per_day_cents,
+    spentCents, heldCents, remainingCents: Math.max(0, agent.max_per_day_cents - spentCents - heldCents),
+    dayStartsAt: start.getTime() });
+});
 app.get('/billing', (_req, res) => {
   // €0.005/verification = 5 tenths-of-a-cent. Integer math in the
   // smallest unit we bill in (here: milli-euros), format at the end.
